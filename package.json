@@ -1,0 +1,16 @@
+{
+  "name": "cvolcy-irc",
+  "version": "0.0.1",
+  "description": "IRC Chat in NodeJS",
+  "main": "server.js",
+  "scripts": {},
+  "author": "clervens",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "redis": "~0.10",
+    "socket.io": "~0.9",
+    "request": "~2.33",
+    "ejs": "~0.8.5",
+    "express": "~3.4"
+  }
+}
