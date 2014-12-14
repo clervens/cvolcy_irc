@@ -61,7 +61,7 @@ if (process.env.REDISCLOUD_URL) {
     var rtg  = url.parse(process.env.REDISCLOUD_URL);
     redisClient = redis.createClient(rtg.port, rtg.hostname);
 
-    redis.auth(rtg.auth.split(":")[1]);
+    // redis.auth(rtg.auth.split(":")[1]);
 } else {
     redisClient = redis.createClient();
 }
