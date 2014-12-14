@@ -57,7 +57,7 @@ app.use( express.static(__dirname + '/public'))
  * Redis: Init
  *---------------------------------------*/
 // redisClient = redis.createClient(4000);
-redisClient = redis.createClient();
+redisClient = redis.createClient(process.env.REDISCLOUD_URL);
 
 redisClient.on('error', function(err) {
     console.log('Redis:', err);

@@ -6,6 +6,7 @@
   "scripts": {},
   "author": "clervens",
   "license": "BSD-2-Clause",
+  "engine": "node ~0.10.33",
   "dependencies": {
     "redis": "~0.10",
     "socket.io": "~0.9",
