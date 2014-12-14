@@ -57,8 +57,8 @@ app.use( express.static(__dirname + '/public'))
  * Redis: Init
  *---------------------------------------*/
 // redisClient = redis.createClient(4000);
-if (process.env.REDISTOGO_URL) {
-    var rtg  = url.parse(process.env.REDISTOGO_URL);
+if (process.env.REDISCLOUD_URL) {
+    var rtg  = url.parse(process.env.REDISCLOUD_URL);
     redisClient = redis.createClient(rtg.port, rtg.hostname);
 
     redis.auth(rtg.auth.split(":")[1]);
