@@ -58,10 +58,11 @@ app.use( express.static(__dirname + '/public'))
  *---------------------------------------*/
 // redisClient = redis.createClient(4000);
 if (process.env.REDISCLOUD_URL) {
-    var rtg  = url.parse(process.env.REDISCLOUD_URL);
-    redisClient = redis.createClient(rtg.port, rtg.hostname);
+    var rcloud  = url.parse(process.env.REDISCLOUD_URL);
+    console.log(rcloud);
+    redisClient = redis.createClient(rcloud.port, rcloud.hostname);
 
-    // redis.auth(rtg.auth.split(":")[1]);
+    redisClient.auth(rcloud.auth.split(":")[1]);
 } else {
     redisClient = redis.createClient();
 }
