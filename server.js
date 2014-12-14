@@ -18,11 +18,6 @@
         - Sorted Sets
 */
 
-// var process = {
-//     env: {
-//         REDISCLOUD_URL: "127.0.0.1:6379"
-//     }
-// }
 var express = require('express'),
     socket  = require('socket.io'),
     http    = require('http'),
@@ -62,8 +57,14 @@ app.use( express.static(__dirname + '/public'))
  * Redis: Init
  *---------------------------------------*/
 // redisClient = redis.createClient(4000);
-redisServer = url.parse(process.env.REDISCLOUD_URL);
-redisClient = redis.createClient(redisServer.port, redisServer.href.substring(0, redisServer.href.indexOf(redisServer.port)-1));
+if (process.env.REDISTOGO_URL) {
+    var rtg  = url.parse(process.env.REDISTOGO_URL);
+    redisClient = redis.createClient(rtg.port, rtg.hostname);
+
+    redis.auth(rtg.auth.split(":")[1]);
+} else {
+    redisClient = redis.createClient();
+}
 
 redisClient.on('error', function(err) {
     console.log('Redis:', err);
