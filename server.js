@@ -57,7 +57,7 @@ app.use( express.static(__dirname + '/public'))
  * Redis: Init
  *---------------------------------------*/
 // redisClient = redis.createClient(4000);
-if (app.settings.env !== 'development') {
+if (app.settings.env.REDISCLOUD_URL) {
 	var rcloud  = url.parse(process.env.REDISCLOUD_URL);
 	redisClient = redis.createClient(rcloud.port, rcloud.hostname);
 
