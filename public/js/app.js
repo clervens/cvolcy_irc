@@ -2,10 +2,12 @@
 
     var server = io.connect(window.location.origin);
     var chat = {};
+    var hp = new HtmlParser();
+    hp.add_filter(new YoutubeFilter());
 
     chat.insertMessage = function(data, isAuthor) {
         var author=(isAuthor) ? 'author' : 'guest';
-        var $newMessage = $('<p class="' + author + '">' + data + '</p>');
+        var $newMessage = $('<p class="' + author + '">' + hp.parse(data) + '</p>');
         $newMessage.prependTo('.user-messages')
     }
 
