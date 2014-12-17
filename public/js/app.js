@@ -7,7 +7,11 @@
 
     chat.insertMessage = function(data, isAuthor) {
         var author=(isAuthor) ? 'author' : 'guest';
-        var $newMessage = $('<p class="' + author + '">' + hp.parse(data) + '</p>');
+        var $newMessage = $('<div class="message ' + author + '">' +
+            data.name + ': ' +
+            hp.parse(data.text) +
+            '<div class="date">'+ new Date(data.time).toISOString().replace(/T/, ' ').replace(/\..+/, '') + '</div>' +
+        '</div>');
         $newMessage.prependTo('.user-messages')
     }
 
@@ -30,7 +34,7 @@
             // It Captures the message
             var message = $('.form-text').val();
             if (message != "") {
-                chat.insertMessage(message, true)
+                chat.insertMessage({ name: nickname, text: message, time: Date.now()}, true)
                 $('form')[0].reset();
                 server.emit('messages', message)
             }
