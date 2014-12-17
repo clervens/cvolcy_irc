@@ -69,15 +69,17 @@ if (process.env.REDISCLOUD_URL) {
 redisClient.on('error', function(err) {
 	console.log('Redis:', err);
 });
+redisClient.del('chatters');
+redisClient.del('history');
 
 
 /*---------------------------------------*
  * Storing Messages Using Redis Client
  *---------------------------------------*/
-var saveMessage = function(name, text) {
+var saveMessage = function(messageObject) {
 
 	//The obj must be converted into string to store it in redis
-	var message = JSON.stringify({ name: name, text: text });
+	var message = JSON.stringify(messageObject);
 	redisClient.lpush('history', message, function(err, response) {
 		// keeps the newest 10 messages
 		redisClient.ltrim('history', 0, 10);
@@ -115,21 +117,21 @@ io.sockets.on('connection', function(client) {
 			messages.forEach(function(oldMsg) {
 				// Parse into JSON object
 				oldMsg = JSON.parse(oldMsg);
-				client.emit('messages', oldMsg.name + ': ' + oldMsg.text)
+				client.emit('messages', oldMsg)
 			})
 		});
 
-		client.broadcast.emit('messages', name + " JOINED");
+		client.broadcast.emit('messages', { name: name, text: 'JOINED', time: Date.now()});
 		console.log('- ' + name + ' joined.');
 	})
 
 	client.on('messages', function(data) {
 		//Get the nickname of this client before broadcasting the message
 		client.get('nickname', function(err, name) {
-			var message = (name + ': ' + data);
+			var message = { name: name, text: data, time: Date.now()};
 
 			// When client sends a message call saveMessage
-			saveMessage(name, data);
+			saveMessage(message);
 
 			// Broadcast with the name and message
 			client.broadcast.emit('messages', message)
@@ -145,7 +147,7 @@ io.sockets.on('connection', function(client) {
 
 			// Emit that a person left the chat
 			client.broadcast.emit('remove chatter', name)
-			client.broadcast.emit('messages', name + " LEFT THE CHAT")
+			client.broadcast.emit('messages', { name: name, text: "LEFT THE CHAT", time: Date.now()})
 
 			// Remove the nickname from Redis Chatters Set
 			redisClient.srem('chatters', name)
@@ -162,7 +164,6 @@ app.get('/', function(req, res) {
 	/*-----Render View------*/
 	res.render('index', {title: "CVolcy: IRC"})
 });
-
 
 server.listen(process.env.PORT || 3000);
 console.log('Listening on port '+(process.env.PORT || 3000)+'...');
