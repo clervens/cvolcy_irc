@@ -151,7 +151,7 @@ io.sockets.on('connection', function(client) {
 
 			// Remove the nickname from Redis Chatters Set
 			redisClient.srem('chatters', name)
-
+			console.log(message);
 		})
 	})
 });
