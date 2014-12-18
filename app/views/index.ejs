@@ -7,11 +7,23 @@
 	<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 	<link href="/css/style.css" rel="stylesheet">
 </head>
-<body>
+<body<%= (isAuthenticated)? " data-username="+user.username : "" %>>
 	<div class="content">
 		<h2 class="title-bar"><%= title %></h2>
 		<section class="chat">
 			<div class="users">
+				<div id="current_user">
+					<% if (!isAuthenticated) { %>
+						<a class="btnLogin" onclick="$('#loginForm').toggle('fast')">Login</a>
+						<form name="loginForm" action="/login" method="POST" id="loginForm" style="display: block;" onsubmit="submitLogin(); return false;">
+							<input type="text" name="username" placeholder="Username">
+							<input type="password" name="password" placeholder="Password">
+							<input type="submit" value="Log In" class="fright">
+						</form>
+					<% } else { %>
+						<h2><%= user.username %></h2>
+					<% } %>
+				</div>
 				<ul class="user-list"></ul>
 			</div>
 			<div class="messages">

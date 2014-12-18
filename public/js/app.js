@@ -2,6 +2,7 @@
 
     var server = io.connect(window.location.origin);
     var chat = {};
+    var nickname = $('body').data('username');
     var hp = new HtmlParser();
     hp.add_filter(new YoutubeFilter());
 
@@ -41,10 +42,14 @@
         }
     }
 
+    chat.join = function(nName) {
+        nickname = nName;
+        server.emit('join', nickname);
+        chat.addChatter(nickname);
+    }
+
     server.on('connect', function(data) {
-        nickname = prompt("What is your nickname?");
-        server.emit('join', nickname)
-        chat.addChatter(nickname)
+        // chat.addChatter(nickname)
     })
 
     server.on('add chatter', chat.addChatter)
@@ -59,4 +64,9 @@
         .on('keypress', chat.emitMessages)
         .focus()
 
+    window.submitLogin = function() {
+        $.post('/login', $('#loginForm').serialize(), function(data) {
+            chat.join(data.username);
+        });
+    }
 })();

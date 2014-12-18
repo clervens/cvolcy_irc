@@ -18,11 +18,16 @@
 		- Sorted Sets
 */
 
-var express = require('express'),
-	socket  = require('socket.io'),
-	http    = require('http'),
-	url     = require('url'),
-	redis   = require('redis');
+var express  = require('express'),
+	expressSession = require('express-session'),
+	socket   = require('socket.io'),
+	http     = require('http'),
+	url      = require('url'),
+	redis    = require('redis')
+	passport = require('passport'),
+	passportLocal = require('passport-local'),
+	bodyParser = require('body-parser'),
+	cookieParser = require('cookie-parser');
 
 var app     = express();
 	server  = http.createServer(app),
@@ -42,6 +47,33 @@ app.set('view engine', 'ejs')
 app.set('views', __dirname + '/app/views')
 app.use(express.favicon())
 
+
+/*---------------------------------------*
+ * Auth Engine
+ *---------------------------------------*/
+app.use(bodyParser({ extended: false }));
+app.use(cookieParser());
+app.use(expressSession({
+	secret: process.env.SECRET_KEY || 'qwerty',
+	resave: false,
+	saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new passportLocal.Strategy(function(username, password, done){
+	if (password === username) {
+		done(null, {id: 1, username: "admin", email: "clervens.volcy@gmail.com"});
+	} else {
+		done(null, null);
+	}
+}));
+passport.serializeUser(function(user, done){
+	done(null, user.id);
+});
+passport.deserializeUser(function(id, done){
+	done(null, {id: 1, username: "admin", email: "clervens.volcy@gmail.com"});
+});
 
 /*---------------------------------------*
  * Public Files
@@ -146,12 +178,11 @@ io.sockets.on('connection', function(client) {
 		client.get('nickname', function(err, name) {
 
 			// Emit that a person left the chat
-			client.broadcast.emit('remove chatter', name)
-			client.broadcast.emit('messages', { name: name, text: "LEFT THE CHAT", time: Date.now()})
+			client.broadcast.emit('remove chatter', name);
+			client.broadcast.emit('messages', { name: name, text: "LEFT THE CHAT", time: Date.now()});
 
 			// Remove the nickname from Redis Chatters Set
-			redisClient.srem('chatters', name)
-			console.log(message);
+			redisClient.srem('chatters', name);
 		})
 	})
 });
@@ -162,7 +193,17 @@ io.sockets.on('connection', function(client) {
  *---------------------------------------*/
 app.get('/', function(req, res) {
 	/*-----Render View------*/
-	res.render('index', {title: "CVolcy: IRC"})
+	res.render('index', {
+		title: "CVolcy: IRC",
+		isAuthenticated: req.isAuthenticated(),
+		user: req.user
+	})
+});
+app.post('/login', passport.authenticate('local'), function(req, res){
+	res.json({
+		isAuthenticated: req.isAuthenticated(),
+		username: req.user.username
+	});
 });
 
 server.listen(process.env.PORT || 3000);
