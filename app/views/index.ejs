@@ -20,11 +20,13 @@
 							<input type="password" name="password" placeholder="Password">
 							<input type="submit" value="Log In" class="fright">
 						</form>
-					<% } else { %>
-						<h2><%= user.username %></h2>
 					<% } %>
 				</div>
-				<ul class="user-list"></ul>
+				<ul class="user-list">
+					<% if (isAuthenticated) { %>
+						<li class="current_user"><%= user.username %></li>
+					<% } %>
+				</ul>
 			</div>
 			<div class="messages">
 				<div class="user-messages"></div>

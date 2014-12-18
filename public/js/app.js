@@ -69,4 +69,8 @@
             chat.join(data.username);
         });
     }
+
+    if (nickname != null) {
+        chat.join(nickname);
+    }
 })();
