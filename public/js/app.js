@@ -2,8 +2,22 @@
 
     var server = io.connect(window.location.origin);
     var chat = {};
-    var hp = new HtmlParser();
-    hp.add_filter(new YoutubeFilter());
+    var hp = new EnhanceText();
+    hp.add_filters([
+        'escape',
+        [
+            'image',
+            {
+                height: 150 //Size in pixel
+            }
+        ],
+        [
+            'youtube',
+            {
+                width: 600 //Size in pixel
+            }
+        ]
+    ]);
 
     chat.insertMessage = function(data, isAuthor) {
         var author=(isAuthor) ? 'author' : 'guest';
